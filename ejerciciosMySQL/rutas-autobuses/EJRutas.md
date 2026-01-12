@@ -1,1 +1,0 @@
-Exercise created in class
