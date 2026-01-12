@@ -1,1 +1,1 @@
-Exercise created in class, the objective was to learn the usage of user commands
+The objective of this exercise was to learn the usage of user commands
