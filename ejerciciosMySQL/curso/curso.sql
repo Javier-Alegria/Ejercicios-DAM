@@ -34,9 +34,8 @@ constraint ck_nota check(nota>=0 and nota<=10)
 
 DROP ROLE IF EXISTS tutor;
 CREATE ROLE tutor;
-GRANT all ON curso.* TO tutor;
+GRANT all ON curso.* TO tutor with grant option;
 GRANT create user ON *.* TO tutor;
-GRANT grant option ON *.* TO tutor;
 
 DROP ROLE IF EXISTS profesor;
 CREATE ROLE profesor;
