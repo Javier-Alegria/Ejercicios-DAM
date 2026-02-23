@@ -1,3 +1,3 @@
-The “ejerciciosMySQL” folder contains MySQL scripts.
+This branch is dedicated to JAVA exercises
 
-La carpeta de "ejerciciosMySQL" contiene scripts de MySQL.
+Esta rama está dedicada a ejercicios de JAVA
