@@ -1,3 +1,3 @@
-This branch is dedicated to MySQL scripts.
+This branch is dedicated to databases scripts.
 
-Esta rama está dedicada a scripts de MySQL
+Esta rama está dedicada a scripts de bases de datos
