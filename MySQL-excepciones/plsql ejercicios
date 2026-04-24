@@ -1,0 +1,182 @@
+/*Pide un numero y escribe su tabla de multiplicar 08/04/2026*/
+set serveroutput on;
+
+declare 
+
+    numero number;
+    contador number;
+    
+begin
+
+    numero:=&introduce_un_numero;
+    
+    for contador in 1..10 loop
+        dbms_output.put_line(numero||' x '||contador||' = '||numero*contador);
+    end loop;
+end;
+
+
+/*Leer dos números enteros y deicr si son iguales y en caso contrario, cuál es mayor de los dos 09/04/2026*/
+set serveroutput on;
+declare
+    a INTEGER :=&num_1;
+    b INTEGER :=&num_2;
+begin
+    if (a=b) then
+        dbms_output.put_line('Los números son iguales');
+    else
+        if (a>b) then
+            dbms_output.put_line('el '||a||' es mayor que el '||b);
+        else
+            dbms_output.put_line('a: '||a||' es menor que b: '||b);
+        end if;
+    end if;
+end;
+
+/* === CURSORES === */
+
+/* Mostrar el nombre de las ciudades de españa
+CURSOR EXPLÍCITO 1 SQL */
+set serveroutput on;
+declare
+
+-- Declar el cursor
+cursor c1 is 
+    select c.nombre as ciudad
+    from pais p join ciudad c
+    on p.cod_pais=c.cod_pais
+    where p.nombre like 'España';
+
+-- declarar variables para el volcado, en este caso, para el nombre de la ciudad
+nomciudad varchar2(20);
+
+begin
+
+-- si el cursor no esta abierto, abrelo
+if not c1 %ISOPEN then
+    open c1;
+end if;
+
+-- empieza el bucle principal
+loop 
+    --volcar primera fila
+    fetch c1 into nomciudad;
+    -- sal cuando c1 no tenga datos
+    exit when c1%NOTFOUND;
+    -- si tiene datos, hacer el tratamiento de las filas
+    dbms_output.put_line(nomciudad);
+end loop;
+-- cerrar el cursor
+close c1;
+end;
+
+/* Mostrar los países europeos y sus capitales */
+set serveroutput on;
+declare
+
+-- Declar el cursor
+cursor c1 is 
+    select nombre, capital
+    from pais
+    where continente like 'Europa';
+
+-- declarar un atributo compuesto utilizando rowtype
+reg_pais c1%rowtype;
+
+begin
+
+-- si el cursor no esta abierto, abrelo
+if not c1 %ISOPEN then
+    open c1;
+end if;
+
+-- empieza el bucle principal
+loop 
+    --volcar primera fila
+    fetch c1 into reg_pais;
+    -- sal cuando c1 no tenga datos
+    exit when c1%NOTFOUND;
+    -- si tiene datos, hacer el tratamiento de las filas
+    dbms_output.put_line(reg_pais.nombre|| '    ' || reg_pais.capital);
+end loop;
+-- cerrar el cursor
+close c1;
+end;
+
+/* CURSOR EXPLÍCITO 3 (CON PARÁMETROS)
+Recibe como parámetro el nombre de un país y devuelve el nombre de las ciudades del país */
+set serveroutput on;
+declare
+
+cursor c1 (nombrepais VARCHAR2) is 
+    select c.nombre as ciudad
+    from pais p join ciudad c
+    on p.cod_pais=c.cod_pais
+    where p.nombre like nombrepais;
+
+nom_ciudad varchar2(20);
+nompais varchar2(20);
+
+begin
+
+nompais := &Dime_un_pais;
+
+if not c1 %ISOPEN then
+    open c1(nompais);
+end if;
+
+loop 
+    --volcar primera fila
+    fetch c1 into nom_ciudad;
+    -- sal cuando c1 no tenga datos
+    exit when c1%NOTFOUND;
+    -- si tiene datos, hacer el tratamiento de las filas
+    dbms_output.put_line(nom_ciudad);
+end loop;
+-- cerrar el cursor
+close c1;
+end;
+
+/* CURSOR EXPLÍCITO 4 (DE ACTUALIZACIÓN)
+recibir nombre de continente y un tanto porciento (entre 0 y 1) y suba el PIB de los paises de ese continente en ese porcentaje */
+set serveroutput on;
+declare
+
+-- Declar el cursor
+cursor c1(continentee VARCHAR2) is 
+    select nombre
+    from pais
+    where continente like continentee
+    for update;
+
+-- declarar un atributo compuesto utilizando rowtype
+reg_pais c1%rowtype;
+nomcon varchar2(20);
+porcentaje number;
+
+begin
+
+nomcon := &Introduce_nombre_continente;
+porcentaje := &introduce_un_porcentaje;
+
+
+
+-- si el cursor no esta abierto, abrelo
+if not c1 %ISOPEN then
+    open c1(nomcon);
+end if;
+
+-- empieza el bucle principal
+loop 
+    --volcar primera fila
+    fetch c1 into reg_pais;
+    -- sal cuando c1 no tenga datos
+    exit when c1%NOTFOUND;
+    -- si tiene datos, subir el pib de los continentes
+    update pais set pib = pib * (1 + porcentaje/100) where current of c1;
+end loop;
+
+-- cerrar el cursor
+close c1;
+commit;
+end;
